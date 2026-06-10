@@ -4,49 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HealthTracker - Cute Edition</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --bg-color: #FFF5F7; --card-bg: #FFFFFF; --primary-pink: #FFB7C5; --accent-pink: #FF69B4; --text-main: #4A0E2A; --text-muted: #8D5B71; --border-color: #F8D7E5; --shadow: 0 12px 28px rgba(255, 182, 193, 0.35); }
-        [data-theme='dark'] { --bg-color: #2D0B1A; --card-bg: #3D1425; --primary-pink: #FF8A9D; --accent-pink: #FF5C77; --text-main: #FFF0F5; --text-muted: #F8C8DC; --border-color: #5E1F3C; --shadow: 0 12px 28px rgba(0, 0, 0, 0.45); }
-        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Poppins', sans-serif; transition: all 0.4s ease; }
-        h1, h2, h3, .font-cute { font-family: 'Comfortaa', cursive; }
-        .cute-card { background-color: var(--card-bg); border: 2.5px solid var(--border-color); border-radius: 28px; box-shadow: var(--shadow); }
-        .btn-pink { background-color: var(--accent-pink); color: white; transition: transform 0.2s; }
-        .btn-pink:hover { transform: scale(1.03); opacity: 0.95; }
-        input, select, textarea { background-color: var(--bg-color); border: 2.5px solid var(--border-color); border-radius: 16px; color: var(--text-main); font-size: 1.15rem; padding: 14px !important; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent-pink); }
-        .footer { border-top: 2.5px dashed var(--border-color); }
-        .mode-transition { transition: background-color 0.5s, color 0.5s; }
-        .cute-table-container { overflow-x: auto; border-radius: 20px; border: 2.5px solid var(--border-color); }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background-color: var(--primary-pink); color: #4A0E2A; font-family: 'Comfortaa', cursive; font-weight: 700; padding: 16px; white-space: nowrap; border-right: 2px solid rgba(74, 14, 42, 0.15); }
-        th:last-child { border-right: none; }
-        [data-theme='dark'] th { background-color: var(--border-color); color: var(--text-main); border-right: 2px solid rgba(255, 240, 245, 0.15); }
-        td { padding: 16px; border-bottom: 1.5px solid var(--border-color); border-right: 1.5px solid var(--border-color); }
-        td:last-child { border-right: none; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background-color: rgba(255, 182, 193, 0.1); }
-        #auth-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: #FFF5F7; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        /* CSS CUSTOM UNTUK TEMA PINK & CUTE */
+        :root {
+            --bg-color: #FFF5F7;
+            --card-bg: #FFFFFF;
+            --primary-pink: #FFB7C5;
+            --accent-pink: #FF69B4;
+            --text-main: #4A0E2A;
+            --text-muted: #8D5B71;
+            --border-color: #F8D7E5;
+            --shadow: 0 12px 28px rgba(255, 182, 193, 0.35);
+        }
+
+        /* DARK MODE THEME */
+        [data-theme='dark'] {
+            --bg-color: #2D0B1A;
+            --card-bg: #3D1425;
+            --primary-pink: #FF8A9D;
+            --accent-pink: #FF5C77;
+            --text-main: #FFF0F5;
+            --text-muted: #F8C8DC;
+            --border-color: #5E1F3C;
+            --shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.4s ease;
+        }
+
+        h1, h2, h3, .font-cute {
+            font-family: 'Comfortaa', cursive;
+        }
+
+        .cute-card {
+            background-color: var(--card-bg);
+            border: 2.5px solid var(--border-color);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-pink {
+            background-color: var(--accent-pink);
+            color: white;
+            transition: transform 0.2s;
+        }
+
+        .btn-pink:hover {
+            transform: scale(1.03);
+            opacity: 0.95;
+        }
+
+        input, select, textarea {
+            background-color: var(--bg-color);
+            border: 2.5px solid var(--border-color);
+            border-radius: 16px;
+            color: var(--text-main);
+            font-size: 1.15rem;
+            padding: 14px !important;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-pink);
+        }
+
+        .footer {
+            border-top: 2.5px dashed var(--border-color);
+        }
+
+        .mode-transition {
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        .cute-table-container {
+            overflow-x: auto;
+            border-radius: 20px;
+            border: 2.5px solid var(--border-color);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-pink);
+            color: #4A0E2A;
+            font-family: 'Comfortaa', cursive;
+            font-weight: 700;
+            padding: 16px;
+            white-space: nowrap;
+            /* Garis pemisah kolom header */
+            border-right: 2px solid rgba(74, 14, 42, 0.15); 
+        }
+
+        th:last-child {
+            border-right: none; /* Kolom terakhir tidak butuh garis kanan */
+        }
+
+        [data-theme='dark'] th {
+            background-color: var(--border-color);
+            color: var(--text-main);
+            border-right: 2px solid rgba(255, 240, 245, 0.15);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1.5px solid var(--border-color);
+            /* Garis pemisah kolom isi data */
+            border-right: 1.5px solid var(--border-color); 
+        }
+
+        td:last-child {
+            border-right: none; /* Kolom terakhir tidak butuh garis kanan */
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 182, 193, 0.1);
+        }
     </style>
 </head>
 <body class="mode-transition text-lg">
 
-    <div id="auth-overlay">
-        <div class="cute-card p-8 w-[90%] max-w-sm text-center">
-            <h2 id="authTitle" class="text-2xl font-bold text-pink-500 mb-6">Login Dek Eva</h2>
-            <input type="email" id="email" placeholder="Email" class="mb-4">
-            <input type="password" id="password" placeholder="Password" class="mb-6">
-            <button onclick="handleAuth()" id="authBtn" class="w-full btn-pink py-4 rounded-2xl font-bold">Login</button>
-            <p class="mt-4 text-sm cursor-pointer" onclick="toggleMode()" id="toggleLink">Belum punya akun? Daftar</p>
-        </div>
-    </div>
-
     <div class="max-w-7xl mx-auto p-4 md:p-8">
+        
         <header class="flex justify-between items-center mb-10">
             <div>
                 <h1 class="text-4xl font-bold text-pink-500 md:text-4xl">
@@ -60,37 +153,105 @@
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
             <div class="lg:col-span-1">
                 <div class="cute-card p-6 md:p-8 sticky top-6">
                     <h2 id="formTitle" class="text-2xl font-bold mb-6 text-pink-500"><i class="fa-solid fa-plus-circle"></i> Tambah Data</h2>
                     <form id="healthForm" class="space-y-5">
                         <input type="hidden" id="editIndex" value="-1">
-                        <div><label class="block text-sm font-bold uppercase mb-2 opacity-75">Tanggal & Waktu</label><input type="datetime-local" id="dateInput" required class="w-full"></div>
-                        <div><label class="block text-sm font-bold uppercase mb-2 opacity-75">Kondisi Tubuh</label><select id="conditionInput" required class="w-full"><option value="Sebelum Makan">Sebelum Makan 🍽️</option><option value="Sesudah Makan">Sesudah Makan 🍰</option><option value="Acak / Puasa">Lainnya / Puasa 🛌</option></select></div>
-                        <div><label class="block text-sm font-bold uppercase mb-2 opacity-75">Gula Darah (mg/dL)</label><input type="number" id="sugarInput" placeholder="Contoh: 100" class="w-full"></div>
-                        <div><label class="block text-sm font-bold uppercase mb-2 opacity-75">Tekanan Darah (Sys/Dia)</label><div class="flex gap-3"><input type="number" id="sysInput" placeholder="120" class="w-1/2"><input type="number" id="diaInput" placeholder="80" class="w-1/2"></div></div>
-                        <div><label class="block text-sm font-bold uppercase mb-2 opacity-75">Catatan Tambahan</label><textarea id="notesInput" placeholder="Contoh: Habis makan martabak / pusing sedikit" class="w-full h-24 resize-none" rows="2"></textarea></div>
-                        <button type="submit" id="submitBtn" class="w-full py-4 rounded-2xl btn-pink font-bold text-xl shadow-md mt-2">Simpan Data 🌸</button>
+                        
+                        <div>
+                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Tanggal & Waktu</label>
+                            <input type="datetime-local" id="dateInput" required class="w-full">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Kondisi Tubuh</label>
+                            <select id="conditionInput" required class="w-full">
+                                <option value="Sebelum Makan">Sebelum Makan 🍽️</option>
+                                <option value="Sesudah Makan">Sesudah Makan 🍰</option>
+                                <option value="Acak / Puasa">Lainnya / Puasa 🛌</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Gula Darah (mg/dL)</label>
+                            <input type="number" id="sugarInput" placeholder="Contoh: 100" class="w-full">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Tekanan Darah (Sys/Dia)</label>
+                            <div class="flex gap-3">
+                                <input type="number" id="sysInput" placeholder="120" class="w-1/2">
+                                <input type="number" id="diaInput" placeholder="80" class="w-1/2">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Catatan Tambahan</label>
+                            <textarea id="notesInput" placeholder="Contoh: Habis makan martabak / pusing sedikit" class="w-full h-24 resize-none" rows="2"></textarea>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="w-full py-4 rounded-2xl btn-pink font-bold text-xl shadow-md mt-2">
+                            Simpan Data 🌸
+                        </button>
                         <button type="button" id="cancelEdit" class="w-full py-2 hidden text-sm font-bold opacity-60 hover:opacity-100">Batal Edit</button>
                     </form>
                 </div>
             </div>
+
             <div class="lg:col-span-2">
                 <div class="cute-card p-6 md:p-8 min-h-[450px]">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                         <h2 class="text-2xl font-bold text-pink-500"><i class="fa-solid fa-history"></i> Riwayat Kesehatan</h2>
+                        
                         <div class="flex gap-2">
-                            <select id="monthFilter" onchange="renderData()" class="text-sm p-2 bg-transparent"><option value="all">Semua Bulan</option><option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option><option value="3">April</option><option value="4">Mei</option><option value="5">Juni</option><option value="6">Juli</option><option value="7">Agustus</option><option value="8">September</option><option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option></select>
-                            <select id="yearFilter" onchange="renderData()" class="text-sm p-2 bg-transparent"></select>
+                            <select id="monthFilter" onchange="renderData()" class="text-sm p-2 bg-transparent">
+                                <option value="all">Semua Bulan</option>
+                                <option value="0">Januari</option>
+                                <option value="1">Februari</option>
+                                <option value="2">Maret</option>
+                                <option value="3">April</option>
+                                <option value="4">Mei</option>
+                                <option value="5">Juni</option>
+                                <option value="6">Juli</option>
+                                <option value="7">Agustus</option>
+                                <option value="8">September</option>
+                                <option value="9">Oktober</option>
+                                <option value="10">November</option>
+                                <option value="11">Desember</option>
+                            </select>
+                            <select id="yearFilter" onchange="renderData()" class="text-sm p-2 bg-transparent">
+                            </select>
                         </div>
                     </div>
-                    <div id="emptyState" class="text-center py-28 opacity-40"><i class="fa-solid fa-cloud-sun text-6xl mb-4"></i><p class="text-xl">Tidak ada catatan pada bulan ini...</p></div>
-                    <div id="tableContainer" class="cute-table-container hidden">
-                        <table><thead><tr><th>Waktu / Tanggal</th><th>Kondisi</th><th>Gula Darah</th><th>Tensi Darah</th><th>Catatan</th><th class="text-center">Aksi</th></tr></thead><tbody id="tableBody"></tbody></table>
+                    
+                    <div id="emptyState" class="text-center py-28 opacity-40">
+                        <i class="fa-solid fa-cloud-sun text-6xl mb-4"></i>
+                        <p class="text-xl">Tidak ada catatan pada bulan ini...</p>
                     </div>
+
+                    <div id="tableContainer" class="cute-table-container hidden">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Waktu / Tanggal</th>
+                                    <th>Kondisi</th>
+                                    <th>Gula Darah</th>
+                                    <th>Tensi Darah</th>
+                                    <th>Catatan</th>
+                                    <th class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>
+
         <footer class="footer mt-16 py-8 text-center text-base opacity-75">
             <p class="font-bold text-lg text-pink-500">© 2026 Dibuat oleh Mas Sigit Mandut</p>
             <p class="mt-1">Dibuat dengan <i class="fa-solid fa-heart text-pink-400"></i> untuk kesehatan Dek Eva tercinta yang berharga</p>
@@ -100,42 +261,165 @@
     </div>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyCiZw_1lGL-2BThMa0LE9EGOhltNZIgzNM", authDomain: "healthtracker-df6e0.firebaseapp.com", projectId: "healthtracker-df6e0", storageBucket: "healthtracker-df6e0.firebasestorage.app", messagingSenderId: "546944932586", appId: "1:546944932586:web:3113a9490cffb20d6a9593" };
-        firebase.initializeApp(firebaseConfig);
-        firebase.auth().onAuthStateChanged(user => { document.getElementById('auth-overlay').style.display = user ? 'none' : 'flex'; });
-        let isLogin = true;
-        function toggleMode() { isLogin = !isLogin; document.getElementById('authTitle').innerText = isLogin ? "Login Dek Eva" : "Daftar Akun"; document.getElementById('authBtn').innerText = isLogin ? "Login" : "Daftar"; document.getElementById('toggleLink').innerText = isLogin ? "Belum punya akun? Daftar" : "Sudah punya akun? Login"; }
-        function handleAuth() { const e = document.getElementById('email').value, p = document.getElementById('password').value; isLogin ? firebase.auth().signInWithEmailAndPassword(e, p).catch(err => alert(err.message)) : firebase.auth().createUserWithEmailAndPassword(e, p).catch(err => alert(err.message)); }
-        
         let healthData = JSON.parse(localStorage.getItem('health_records')) || [];
-        const healthForm = document.getElementById('healthForm'), tableBody = document.getElementById('tableBody'), tableContainer = document.getElementById('tableContainer'), emptyState = document.getElementById('emptyState'), themeToggle = document.getElementById('themeToggle'), body = document.body;
+
+        const healthForm = document.getElementById('healthForm');
+        const tableBody = document.getElementById('tableBody');
+        const tableContainer = document.getElementById('tableContainer');
+        const emptyState = document.getElementById('emptyState');
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
 
         function initApp() {
-            setNow(); const yf = document.getElementById('yearFilter'), cy = new Date().getFullYear();
-            let yopt = '<option value="all">Semua Tahun</option>';
-            for (let y = 2024; y <= 2030; y++) yopt += `<option value="${y}" ${y === cy ? 'selected' : ''}>${y}</option>`;
-            yf.innerHTML = yopt; document.getElementById('monthFilter').value = new Date().getMonth(); renderData();
+            setNow();
+            
+            const yearFilter = document.getElementById('yearFilter');
+            const currentYear = new Date().getFullYear();
+            let yearOptions = '<option value="all">Semua Tahun</option>';
+            for (let y = 2024; y <= 2030; y++) {
+                yearOptions += `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`;
+            }
+            yearFilter.innerHTML = yearOptions;
+
+            document.getElementById('monthFilter').value = new Date().getMonth();
+
+            renderData();
         }
-        function setNow() { const n = new Date(); n.setMinutes(n.getMinutes() - n.getTimezoneOffset()); document.getElementById('dateInput').value = n.toISOString().slice(0, 16); }
+
+        function setNow() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('dateInput').value = now.toISOString().slice(0, 16);
+        }
+
         function renderData() {
-            const sm = document.getElementById('monthFilter').value, sy = document.getElementById('yearFilter').value;
-            const fd = healthData.filter(i => { const d = new Date(i.date); return (sm == 'all' || d.getMonth() == sm) && (sy == 'all' || d.getFullYear() == sy); });
-            if (fd.length == 0) { emptyState.style.display = 'block'; tableContainer.classList.add('hidden'); } else { emptyState.style.display = 'none'; tableContainer.classList.remove('hidden'); }
-            tableBody.innerHTML = fd.map((i, idx) => {
-                const od = healthData.findIndex(d => d.date == i.date && d.sugar == i.sugar && d.sys == i.sys);
-                return `<tr><td class="text-sm font-semibold text-pink-600">${new Date(i.date).toLocaleString('id-ID')}</td><td>${i.condition}</td><td>${i.sugar || '-'} mg/dL</td><td>${i.sys || '-'}/${i.dia || '-'} mmHg</td><td>${i.notes || '-'}</td><td class="text-center"><button onclick="editRecord(${od})" class="text-blue-400"><i class="fa-solid fa-edit"></i></button> <button onclick="deleteRecord(${od})" class="text-red-400"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+            const selectedMonth = document.getElementById('monthFilter').value;
+            const selectedYear = document.getElementById('yearFilter').value;
+
+            const filteredData = healthData.filter(item => {
+                const itemDate = new Date(item.date);
+                const matchMonth = selectedMonth === 'all' || itemDate.getMonth() == selectedMonth;
+                const matchYear = selectedYear === 'all' || itemDate.getFullYear() == selectedYear;
+                return matchMonth && matchYear;
+            });
+
+            if (filteredData.length === 0) {
+                emptyState.style.display = 'block';
+                tableContainer.classList.add('hidden');
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            tableContainer.classList.remove('hidden');
+            
+            tableBody.innerHTML = filteredData.map((item) => {
+                const originalIndex = healthData.findIndex(d => d.date === item.date && d.sugar === item.sugar && d.sys === item.sys);
+                const date = new Date(item.date).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+                
+                const condition = item.condition || "Sebelum Makan"; 
+                const notes = item.notes || `<span class="opacity-30 italic">- tidak ada -</span>`;
+                
+                return `
+                    <tr>
+                        <td class="text-sm font-semibold text-pink-600">${date}</td>
+                        <td class="text-sm font-medium opacity-90">${condition}</td>
+                        <td><span class="font-bold text-pink-500">${item.sugar || '-'}</span> <small class="text-xs opacity-60">mg/dL</small></td>
+                        <td><span class="font-bold text-pink-500">${item.sys || '-'}/${item.dia || '-'}</span> <small class="text-xs opacity-60">mmHg</small></td>
+                        <td class="text-sm max-w-[200px] break-words opacity-80">${notes}</td>
+                        <td class="text-center text-lg">
+                            <button onclick="editRecord(${originalIndex})" class="text-blue-400 hover:text-blue-600 px-1 transition-transform active:scale-90" title="Edit"><i class="fa-solid fa-edit"></i></button>
+                            <button onclick="deleteRecord(${originalIndex})" class="text-red-400 hover:text-red-600 px-1 transition-transform active:scale-90" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
             }).join('');
         }
-        healthForm.addEventListener('submit', (e) => { e.preventDefault(); const idx = parseInt(document.getElementById('editIndex').value); const rec = { date: document.getElementById('dateInput').value, condition: document.getElementById('conditionInput').value, sugar: document.getElementById('sugarInput').value, sys: document.getElementById('sysInput').value, dia: document.getElementById('diaInput').value, notes: document.getElementById('notesInput').value }; idx == -1 ? healthData.unshift(rec) : healthData[idx] = rec; saveAndRefresh(); resetForm(); });
-        function saveAndRefresh() { localStorage.setItem('health_records', JSON.stringify(healthData)); renderData(); }
-        function resetForm() { healthForm.reset(); document.getElementById('editIndex').value = "-1"; document.getElementById('submitBtn').innerHTML = "Simpan Data 🌸"; document.getElementById('cancelEdit').classList.add('hidden'); setNow(); }
-        window.editRecord = (idx) => { const i = healthData[idx]; document.getElementById('dateInput').value = i.date; document.getElementById('conditionInput').value = i.condition; document.getElementById('sugarInput').value = i.sugar; document.getElementById('sysInput').value = i.sys; document.getElementById('diaInput').value = i.dia; document.getElementById('notesInput').value = i.notes; document.getElementById('editIndex').value = idx; document.getElementById('submitBtn').innerHTML = "Perbarui Data ✨"; document.getElementById('cancelEdit').classList.remove('hidden'); };
-        
-        // KONFIRMASI HAPUS ASLI ANDA
-        window.deleteRecord = (idx) => { if(confirm("Hapus catatan cantik ini? 🥺?")) { healthData.splice(idx, 1); saveAndRefresh(); } };
-        
+
+        healthForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const editIdx = parseInt(document.getElementById('editIndex').value);
+            
+            const record = {
+                date: document.getElementById('dateInput').value,
+                condition: document.getElementById('conditionInput').value,
+                sugar: document.getElementById('sugarInput').value,
+                sys: document.getElementById('sysInput').value,
+                dia: document.getElementById('diaInput').value,
+                notes: document.getElementById('notesInput').value
+            };
+
+            if (editIdx === -1) {
+                healthData.unshift(record);
+            } else {
+                healthData[editIdx] = record;
+            }
+
+            saveAndRefresh();
+            resetForm();
+        });
+
+        function saveAndRefresh() {
+            localStorage.setItem('health_records', JSON.stringify(healthData));
+            renderData();
+        }
+
+        function resetForm() {
+            healthForm.reset();
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('submitBtn').innerHTML = "Simpan Data 🌸";
+            document.getElementById('cancelEdit').classList.add('hidden');
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-plus-circle"></i> Tambah Data';
+            setNow();
+        }
+
+        window.editRecord = (index) => {
+            const item = healthData[index];
+            document.getElementById('dateInput').value = item.date;
+            document.getElementById('conditionInput').value = item.condition || "Sebelum Makan";
+            document.getElementById('sugarInput').value = item.sugar;
+            document.getElementById('sysInput').value = item.sys;
+            document.getElementById('diaInput').value = item.dia;
+            document.getElementById('notesInput').value = item.notes || "";
+            document.getElementById('editIndex').value = index;
+
+            document.getElementById('submitBtn').innerHTML = "Perbarui Data ✨";
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen-fancy"></i> Edit Catatan';
+            document.getElementById('cancelEdit').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.deleteRecord = (index) => {
+            if(confirm("Hapus catatan cantik ini? 🥺")) {
+                healthData.splice(index, 1);
+                saveAndRefresh();
+            }
+        };
+
         document.getElementById('cancelEdit').onclick = resetForm;
-        themeToggle.onclick = () => { const t = body.getAttribute('data-theme') == 'light' ? 'dark' : 'light'; body.setAttribute('data-theme', t); localStorage.setItem('theme', t); document.getElementById('themeIcon').className = t == 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; };
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.onclick = () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        };
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                icon.className = 'fa-solid fa-sun';
+                icon.style.color = '#FFD700';
+            } else {
+                icon.className = 'fa-solid fa-moon';
+                icon.style.color = '#FF69B4';
+            }
+        }
+
         initApp();
     </script>
 </body>
