@@ -61,7 +61,7 @@
             opacity: 0.95;
         }
 
-        input, select {
+        input, select, textarea {
             background-color: var(--bg-color);
             border: 2.5px solid var(--border-color);
             border-radius: 16px;
@@ -70,7 +70,7 @@
             padding: 14px !important;
         }
 
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--accent-pink);
         }
@@ -82,11 +82,63 @@
         .mode-transition {
             transition: background-color 0.5s, color 0.5s;
         }
+
+        .cute-table-container {
+            overflow-x: auto;
+            border-radius: 20px;
+            border: 2.5px solid var(--border-color);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-pink);
+            color: #4A0E2A;
+            font-family: 'Comfortaa', cursive;
+            font-weight: 700;
+            padding: 16px;
+            white-space: nowrap;
+            /* Garis pemisah kolom header */
+            border-right: 2px solid rgba(74, 14, 42, 0.15); 
+        }
+
+        th:last-child {
+            border-right: none; /* Kolom terakhir tidak butuh garis kanan */
+        }
+
+        [data-theme='dark'] th {
+            background-color: var(--border-color);
+            color: var(--text-main);
+            border-right: 2px solid rgba(255, 240, 245, 0.15);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1.5px solid var(--border-color);
+            /* Garis pemisah kolom isi data */
+            border-right: 1.5px solid var(--border-color); 
+        }
+
+        td:last-child {
+            border-right: none; /* Kolom terakhir tidak butuh garis kanan */
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 182, 193, 0.1);
+        }
     </style>
 </head>
 <body class="mode-transition text-lg">
 
-    <div class="max-w-5xl mx-auto p-4 md:p-8">
+    <div class="max-w-7xl mx-auto p-4 md:p-8">
         
         <header class="flex justify-between items-center mb-10">
             <div>
@@ -100,9 +152,9 @@
             </button>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <div class="md:col-span-1">
+            <div class="lg:col-span-1">
                 <div class="cute-card p-6 md:p-8 sticky top-6">
                     <h2 id="formTitle" class="text-2xl font-bold mb-6 text-pink-500"><i class="fa-solid fa-plus-circle"></i> Tambah Data</h2>
                     <form id="healthForm" class="space-y-5">
@@ -111,6 +163,15 @@
                         <div>
                             <label class="block text-sm font-bold uppercase mb-2 opacity-75">Tanggal & Waktu</label>
                             <input type="datetime-local" id="dateInput" required class="w-full">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Kondisi Tubuh</label>
+                            <select id="conditionInput" required class="w-full">
+                                <option value="Sebelum Makan">Sebelum Makan 🍽️</option>
+                                <option value="Sesudah Makan">Sesudah Makan 🍰</option>
+                                <option value="Acak / Puasa">Lainnya / Puasa 🛌</option>
+                            </select>
                         </div>
 
                         <div>
@@ -126,6 +187,11 @@
                             </div>
                         </div>
 
+                        <div>
+                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Catatan Tambahan</label>
+                            <textarea id="notesInput" placeholder="Contoh: Habis makan martabak / pusing sedikit" class="w-full h-24 resize-none" rows="2"></textarea>
+                        </div>
+
                         <button type="submit" id="submitBtn" class="w-full py-4 rounded-2xl btn-pink font-bold text-xl shadow-md mt-2">
                             Simpan Data 🌸
                         </button>
@@ -134,7 +200,7 @@
                 </div>
             </div>
 
-            <div class="md:col-span-2">
+            <div class="lg:col-span-2">
                 <div class="cute-card p-6 md:p-8 min-h-[450px]">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                         <h2 class="text-2xl font-bold text-pink-500"><i class="fa-solid fa-history"></i> Riwayat Kesehatan</h2>
@@ -156,7 +222,7 @@
                                 <option value="11">Desember</option>
                             </select>
                             <select id="yearFilter" onchange="renderData()" class="text-sm p-2 bg-transparent">
-                                </select>
+                            </select>
                         </div>
                     </div>
                     
@@ -165,8 +231,23 @@
                         <p class="text-xl">Tidak ada catatan pada bulan ini...</p>
                     </div>
 
-                    <div id="dataList" class="space-y-5">
-                        </div>
+                    <div id="tableContainer" class="cute-table-container hidden">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Waktu / Tanggal</th>
+                                    <th>Kondisi</th>
+                                    <th>Gula Darah</th>
+                                    <th>Tensi Darah</th>
+                                    <th>Catatan</th>
+                                    <th class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -183,16 +264,15 @@
         let healthData = JSON.parse(localStorage.getItem('health_records')) || [];
 
         const healthForm = document.getElementById('healthForm');
-        const dataList = document.getElementById('dataList');
+        const tableBody = document.getElementById('tableBody');
+        const tableContainer = document.getElementById('tableContainer');
         const emptyState = document.getElementById('emptyState');
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 
-        // Inisialisasi Tanggal & Pengisian Dropdown Tahun Filter
         function initApp() {
             setNow();
             
-            // Isi pilihan tahun dari tahun 2024 sampai 2030 otomatis
             const yearFilter = document.getElementById('yearFilter');
             const currentYear = new Date().getFullYear();
             let yearOptions = '<option value="all">Semua Tahun</option>';
@@ -201,7 +281,6 @@
             }
             yearFilter.innerHTML = yearOptions;
 
-            // Set default filter ke bulan sekarang agar langsung rapi
             document.getElementById('monthFilter').value = new Date().getMonth();
 
             renderData();
@@ -213,12 +292,10 @@
             document.getElementById('dateInput').value = now.toISOString().slice(0, 16);
         }
 
-        // Render Data dengan penyaringan Filter Bulanan & Tahunan
         function renderData() {
             const selectedMonth = document.getElementById('monthFilter').value;
             const selectedYear = document.getElementById('yearFilter').value;
 
-            // Proses Penyaringan (Filtering)
             const filteredData = healthData.filter(item => {
                 const itemDate = new Date(item.date);
                 const matchMonth = selectedMonth === 'all' || itemDate.getMonth() == selectedMonth;
@@ -228,36 +305,32 @@
 
             if (filteredData.length === 0) {
                 emptyState.style.display = 'block';
-                dataList.innerHTML = '';
+                tableContainer.classList.add('hidden');
                 return;
             }
             
             emptyState.style.display = 'none';
-            dataList.innerHTML = filteredData.map((item) => {
-                // Mencari indeks asli pada array induk (healthData) untuk keperluan edit/hapus yang akurat
+            tableContainer.classList.remove('hidden');
+            
+            tableBody.innerHTML = filteredData.map((item) => {
                 const originalIndex = healthData.findIndex(d => d.date === item.date && d.sugar === item.sugar && d.sys === item.sys);
                 const date = new Date(item.date).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
                 
+                const condition = item.condition || "Sebelum Makan"; 
+                const notes = item.notes || `<span class="opacity-30 italic">- tidak ada -</span>`;
+                
                 return `
-                    <div class="cute-card p-5 border-l-[10px] border-pink-400 flex justify-between items-center bg-card">
-                        <div class="flex-grow space-y-2">
-                            <div class="text-xs font-bold text-pink-500 uppercase tracking-widest">${date}</div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <span class="text-sm opacity-60 block font-medium">Gula Darah</span>
-                                    <span class="font-bold text-2xl text-pink-500">${item.sugar || '-'}</span> <span class="text-sm opacity-50">mg/dL</span>
-                                </div>
-                                <div>
-                                    <span class="text-sm opacity-60 block font-medium">Tekanan Darah</span>
-                                    <span class="font-bold text-2xl text-pink-500">${item.sys || '-'}/${item.dia || '-'}</span> <span class="text-sm opacity-50">mmHg</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-3 ml-4 text-xl">
-                            <button onclick="editRecord(${originalIndex})" class="text-blue-400 hover:text-blue-600 p-2 transition-transform active:scale-90" title="Edit"><i class="fa-solid fa-edit"></i></button>
-                            <button onclick="deleteRecord(${originalIndex})" class="text-red-400 hover:text-red-600 p-2 transition-transform active:scale-90" title="Hapus"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
+                    <tr>
+                        <td class="text-sm font-semibold text-pink-600">${date}</td>
+                        <td class="text-sm font-medium opacity-90">${condition}</td>
+                        <td><span class="font-bold text-pink-500">${item.sugar || '-'}</span> <small class="text-xs opacity-60">mg/dL</small></td>
+                        <td><span class="font-bold text-pink-500">${item.sys || '-'}/${item.dia || '-'}</span> <small class="text-xs opacity-60">mmHg</small></td>
+                        <td class="text-sm max-w-[200px] break-words opacity-80">${notes}</td>
+                        <td class="text-center text-lg">
+                            <button onclick="editRecord(${originalIndex})" class="text-blue-400 hover:text-blue-600 px-1 transition-transform active:scale-90" title="Edit"><i class="fa-solid fa-edit"></i></button>
+                            <button onclick="deleteRecord(${originalIndex})" class="text-red-400 hover:text-red-600 px-1 transition-transform active:scale-90" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
                 `;
             }).join('');
         }
@@ -268,9 +341,11 @@
             
             const record = {
                 date: document.getElementById('dateInput').value,
+                condition: document.getElementById('conditionInput').value,
                 sugar: document.getElementById('sugarInput').value,
                 sys: document.getElementById('sysInput').value,
                 dia: document.getElementById('diaInput').value,
+                notes: document.getElementById('notesInput').value
             };
 
             if (editIdx === -1) {
@@ -300,9 +375,11 @@
         window.editRecord = (index) => {
             const item = healthData[index];
             document.getElementById('dateInput').value = item.date;
+            document.getElementById('conditionInput').value = item.condition || "Sebelum Makan";
             document.getElementById('sugarInput').value = item.sugar;
             document.getElementById('sysInput').value = item.sys;
             document.getElementById('diaInput').value = item.dia;
+            document.getElementById('notesInput').value = item.notes || "";
             document.getElementById('editIndex').value = index;
 
             document.getElementById('submitBtn').innerHTML = "Perbarui Data ✨";
@@ -320,7 +397,6 @@
 
         document.getElementById('cancelEdit').onclick = resetForm;
 
-        // Dark/Light Mode Logika
         const savedTheme = localStorage.getItem('theme') || 'light';
         body.setAttribute('data-theme', savedTheme);
         updateThemeIcon(savedTheme);
@@ -344,7 +420,6 @@
             }
         }
 
-        // Jalankan inisialisasi aplikasi pertama kali
         initApp();
     </script>
 </body>
