@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthTracker - Cute Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* CSS CUSTOM UNTUK TEMA PINK & CUTE */
+        :root {
+            --bg-color: #FFF5F7;
+            --card-bg: #FFFFFF;
+            --primary-pink: #FFB7C5;
+            --accent-pink: #FF69B4;
+            --text-main: #4A0E2A;
+            --text-muted: #8D5B71;
+            --border-color: #F8D7E5;
+            --shadow: 0 12px 28px rgba(255, 182, 193, 0.35);
+        }
+
+        /* DARK MODE THEME */
+        [data-theme='dark'] {
+            --bg-color: #2D0B1A;
+            --card-bg: #3D1425;
+            --primary-pink: #FF8A9D;
+            --accent-pink: #FF5C77;
+            --text-main: #FFF0F5;
+            --text-muted: #F8C8DC;
+            --border-color: #5E1F3C;
+            --shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.4s ease;
+        }
+
+        h1, h2, h3, .font-cute {
+            font-family: 'Comfortaa', cursive;
+        }
+
+        .cute-card {
+            background-color: var(--card-bg);
+            border: 2.5px solid var(--border-color);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-pink {
+            background-color: var(--accent-pink);
+            color: white;
+            transition: transform 0.2s;
+        }
+
+        .btn-pink:hover {
+            transform: scale(1.03);
+            opacity: 0.95;
+        }
+
+        input, select {
+            background-color: var(--bg-color);
+            border: 2.5px solid var(--border-color);
+            border-radius: 16px;
+            color: var(--text-main);
+            font-size: 1.15rem;
+            padding: 14px !important;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-pink);
+        }
+
+        .footer {
+            border-top: 2.5px dashed var(--border-color);
+        }
+
+        .mode-transition {
+            transition: background-color 0.5s, color 0.5s;
+        }
+    </style>
+</head>
+<body class="mode-transition text-lg">
+
+    <div class="max-w-5xl mx-auto p-4 md:p-8">
+        
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-4xl font-bold text-pink-500 md:text-4xl">
+                    <i class="fa-solid fa-heart-pulse"></i> Pencatat Kesehatan Istriku Tercinta Dek Eva Hernawati
+                </h1>
+                <p class="text-base md:text-lg opacity-70 mt-1">Catat kesehatan Dek Eva dengan penuh cinta ✨</p>
+            </div>
+            <button id="themeToggle" class="w-14 h-14 rounded-full cute-card flex items-center justify-center text-2xl text-pink-500 active:scale-95 transition-transform">
+                <i id="themeIcon" class="fa-solid fa-moon"></i>
+            </button>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <div class="md:col-span-1">
+                <div class="cute-card p-6 md:p-8 sticky top-6">
+                    <h2 id="formTitle" class="text-2xl font-bold mb-6 text-pink-500"><i class="fa-solid fa-plus-circle"></i> Tambah Data</h2>
+                    <form id="healthForm" class="space-y-5">
+                        <input type="hidden" id="editIndex" value="-1">
+                        
+                        <div>
+                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Tanggal & Waktu</label>
+                            <input type="datetime-local" id="dateInput" required class="w-full">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Gula Darah (mg/dL)</label>
+                            <input type="number" id="sugarInput" placeholder="Contoh: 100" class="w-full">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Tekanan Darah (Sys/Dia)</label>
+                            <div class="flex gap-3">
+                                <input type="number" id="sysInput" placeholder="120" class="w-1/2">
+                                <input type="number" id="diaInput" placeholder="80" class="w-1/2">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="w-full py-4 rounded-2xl btn-pink font-bold text-xl shadow-md mt-2">
+                            Simpan Data 🌸
+                        </button>
+                        <button type="button" id="cancelEdit" class="w-full py-2 hidden text-sm font-bold opacity-60 hover:opacity-100">Batal Edit</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="md:col-span-2">
+                <div class="cute-card p-6 md:p-8 min-h-[450px]">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                        <h2 class="text-2xl font-bold text-pink-500"><i class="fa-solid fa-history"></i> Riwayat Kesehatan</h2>
+                        
+                        <div class="flex gap-2">
+                            <select id="monthFilter" onchange="renderData()" class="text-sm p-2 bg-transparent">
+                                <option value="all">Semua Bulan</option>
+                                <option value="0">Januari</option>
+                                <option value="1">Februari</option>
+                                <option value="2">Maret</option>
+                                <option value="3">April</option>
+                                <option value="4">Mei</option>
+                                <option value="5">Juni</option>
+                                <option value="6">Juli</option>
+                                <option value="7">Agustus</option>
+                                <option value="8">September</option>
+                                <option value="9">Oktober</option>
+                                <option value="10">November</option>
+                                <option value="11">Desember</option>
+                            </select>
+                            <select id="yearFilter" onchange="renderData()" class="text-sm p-2 bg-transparent">
+                                </select>
+                        </div>
+                    </div>
+                    
+                    <div id="emptyState" class="text-center py-28 opacity-40">
+                        <i class="fa-solid fa-cloud-sun text-6xl mb-4"></i>
+                        <p class="text-xl">Tidak ada catatan pada bulan ini...</p>
+                    </div>
+
+                    <div id="dataList" class="space-y-5">
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer mt-16 py-8 text-center text-base opacity-75">
+            <p class="font-bold text-lg text-pink-500">© 2026 Dibuat oleh Mas Sigit Mandut</p>
+            <p class="mt-1">Dibuat dengan <i class="fa-solid fa-heart text-pink-400"></i> untuk kesehatan Dek Eva tercinta yang berharga</p>
+            <p class="mt-1">Sehat selalu dan umur panjang bersama Mas Sigit ya Dek Evaku sayang <i class="fa-solid fa-heart text-pink-400"></i></p>
+            <p class="mt-1">Mas Sigit <i class="fa-solid fa-heart text-pink-400"></i> Dek Eva</p>
+        </footer>
+    </div>
+
+    <script>
+        let healthData = JSON.parse(localStorage.getItem('health_records')) || [];
+
+        const healthForm = document.getElementById('healthForm');
+        const dataList = document.getElementById('dataList');
+        const emptyState = document.getElementById('emptyState');
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        // Inisialisasi Tanggal & Pengisian Dropdown Tahun Filter
+        function initApp() {
+            setNow();
+            
+            // Isi pilihan tahun dari tahun 2024 sampai 2030 otomatis
+            const yearFilter = document.getElementById('yearFilter');
+            const currentYear = new Date().getFullYear();
+            let yearOptions = '<option value="all">Semua Tahun</option>';
+            for (let y = 2024; y <= 2030; y++) {
+                yearOptions += `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`;
+            }
+            yearFilter.innerHTML = yearOptions;
+
+            // Set default filter ke bulan sekarang agar langsung rapi
+            document.getElementById('monthFilter').value = new Date().getMonth();
+
+            renderData();
+        }
+
+        function setNow() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('dateInput').value = now.toISOString().slice(0, 16);
+        }
+
+        // Render Data dengan penyaringan Filter Bulanan & Tahunan
+        function renderData() {
+            const selectedMonth = document.getElementById('monthFilter').value;
+            const selectedYear = document.getElementById('yearFilter').value;
+
+            // Proses Penyaringan (Filtering)
+            const filteredData = healthData.filter(item => {
+                const itemDate = new Date(item.date);
+                const matchMonth = selectedMonth === 'all' || itemDate.getMonth() == selectedMonth;
+                const matchYear = selectedYear === 'all' || itemDate.getFullYear() == selectedYear;
+                return matchMonth && matchYear;
+            });
+
+            if (filteredData.length === 0) {
+                emptyState.style.display = 'block';
+                dataList.innerHTML = '';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            dataList.innerHTML = filteredData.map((item) => {
+                // Mencari indeks asli pada array induk (healthData) untuk keperluan edit/hapus yang akurat
+                const originalIndex = healthData.findIndex(d => d.date === item.date && d.sugar === item.sugar && d.sys === item.sys);
+                const date = new Date(item.date).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+                
+                return `
+                    <div class="cute-card p-5 border-l-[10px] border-pink-400 flex justify-between items-center bg-card">
+                        <div class="flex-grow space-y-2">
+                            <div class="text-xs font-bold text-pink-500 uppercase tracking-widest">${date}</div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <span class="text-sm opacity-60 block font-medium">Gula Darah</span>
+                                    <span class="font-bold text-2xl text-pink-500">${item.sugar || '-'}</span> <span class="text-sm opacity-50">mg/dL</span>
+                                </div>
+                                <div>
+                                    <span class="text-sm opacity-60 block font-medium">Tekanan Darah</span>
+                                    <span class="font-bold text-2xl text-pink-500">${item.sys || '-'}/${item.dia || '-'}</span> <span class="text-sm opacity-50">mmHg</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 ml-4 text-xl">
+                            <button onclick="editRecord(${originalIndex})" class="text-blue-400 hover:text-blue-600 p-2 transition-transform active:scale-90" title="Edit"><i class="fa-solid fa-edit"></i></button>
+                            <button onclick="deleteRecord(${originalIndex})" class="text-red-400 hover:text-red-600 p-2 transition-transform active:scale-90" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        healthForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const editIdx = parseInt(document.getElementById('editIndex').value);
+            
+            const record = {
+                date: document.getElementById('dateInput').value,
+                sugar: document.getElementById('sugarInput').value,
+                sys: document.getElementById('sysInput').value,
+                dia: document.getElementById('diaInput').value,
+            };
+
+            if (editIdx === -1) {
+                healthData.unshift(record);
+            } else {
+                healthData[editIdx] = record;
+            }
+
+            saveAndRefresh();
+            resetForm();
+        });
+
+        function saveAndRefresh() {
+            localStorage.setItem('health_records', JSON.stringify(healthData));
+            renderData();
+        }
+
+        function resetForm() {
+            healthForm.reset();
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('submitBtn').innerHTML = "Simpan Data 🌸";
+            document.getElementById('cancelEdit').classList.add('hidden');
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-plus-circle"></i> Tambah Data';
+            setNow();
+        }
+
+        window.editRecord = (index) => {
+            const item = healthData[index];
+            document.getElementById('dateInput').value = item.date;
+            document.getElementById('sugarInput').value = item.sugar;
+            document.getElementById('sysInput').value = item.sys;
+            document.getElementById('diaInput').value = item.dia;
+            document.getElementById('editIndex').value = index;
+
+            document.getElementById('submitBtn').innerHTML = "Perbarui Data ✨";
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen-fancy"></i> Edit Catatan';
+            document.getElementById('cancelEdit').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.deleteRecord = (index) => {
+            if(confirm("Hapus catatan cantik ini? 🥺")) {
+                healthData.splice(index, 1);
+                saveAndRefresh();
+            }
+        };
+
+        document.getElementById('cancelEdit').onclick = resetForm;
+
+        // Dark/Light Mode Logika
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.onclick = () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        };
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                icon.className = 'fa-solid fa-sun';
+                icon.style.color = '#FFD700';
+            } else {
+                icon.className = 'fa-solid fa-moon';
+                icon.style.color = '#FF69B4';
+            }
+        }
+
+        // Jalankan inisialisasi aplikasi pertama kali
+        initApp();
+    </script>
+</body>
+</html>
