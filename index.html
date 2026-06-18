@@ -91,7 +91,7 @@
             transition: background-color 0.5s, color 0.5s;
         }
 
-        /* TABEL SPREADSHEET STYLE OPTIMAL UNTUK LANDSCAPE */
+        /* TABEL RESPONSIF: OTOMATIS PAS 1 LAYAR DI HP, SPREADSHEET DI LAPTOP */
         .cute-table-container {
             overflow-x: auto;
             border-radius: 20px;
@@ -102,8 +102,9 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            text-align: center; /* Diubah menjadi rata tengah */
-            min-width: 1100px; /* Diperlebar agar input form muat di layar Xiaomi 14T */
+            text-align: center;
+            table-layout: fixed; /* Memaksa kolom mengikuti persentase lebar di HP */
+            min-width: 100%;
         }
 
         th {
@@ -111,10 +112,11 @@
             color: #4A0E2A;
             font-family: 'Comfortaa', cursive;
             font-weight: 700;
-            padding: 16px 12px;
-            white-space: nowrap;
+            padding: 8px 2px; /* Padding minimal untuk HP */
+            font-size: 0.65rem; /* Ukuran huruf header sangat ringkas di HP */
+            white-space: normal;
             border-right: 2px solid rgba(74, 14, 42, 0.15); 
-            text-align: center; /* Pastikan judul tabel rata tengah */
+            text-align: center;
         }
 
         [data-theme='dark'] th {
@@ -124,7 +126,7 @@
         }
 
         td {
-            padding: 8px;
+            padding: 4px 2px; /* Padding baris minimal di HP */
             border-bottom: 1.5px solid var(--border-color);
             border-right: 1.5px solid var(--border-color); 
             vertical-align: middle;
@@ -134,18 +136,24 @@
         tr:last-child td { border-bottom: none; }
         tr:hover td { background-color: rgba(255, 182, 193, 0.05); }
 
-        /* KUSTOMISASI INPUT LANGSUNG DI TABEL */
+        /* KUSTOMISASI INPUT AGAR COCOK DI LAYAR KECIL */
         .table-input {
             width: 100%;
             background-color: transparent;
             border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 10px 12px;
+            border-radius: 8px;
+            padding: 4px 2px;
             color: var(--text-main);
             font-family: 'Poppins', sans-serif;
-            font-size: 0.95rem;
-            text-align: center; /* Input field menjadi rata tengah */
+            font-size: 0.65rem; /* Ukuran font input ringkas di HP */
+            text-align: center;
             transition: all 0.3s;
+        }
+
+        /* Khusus input tanggal mobile agar muat */
+        input[type="datetime-local"].table-input {
+            font-size: 0.6rem;
+            padding: 4px 1px;
         }
 
         .table-input:hover {
@@ -159,38 +167,54 @@
             box-shadow: 0 0 10px rgba(255, 105, 180, 0.1);
         }
         
-        /* Mengatur lebar spesifik kolom */
-        .col-date { width: 220px; }
-        .col-cond { width: 180px; }
-        .col-sugar, .col-sys, .col-dia { width: 120px; }
-        .col-notes { min-width: 200px; }
-        .col-action { width: 120px; text-align: center; }
+        /* PEMBAGIAN LEBAR KOLOM DINAMIS (TOTAL 100% LAYAR HP) */
+        .col-date { width: 22%; }
+        .col-cond { width: 17%; }
+        .col-sugar { width: 11%; }
+        .col-sys { width: 11%; }
+        .col-dia { width: 11%; }
+        .col-notes { width: 17%; }
+        .col-action { width: 11%; text-align: center; }
+
+        /* KEMBALIKAN KE UKURAN NORMAL JIKA DIBUKA DI TABLET / LAPTOP (MD KE ATAS) */
+        @media (min-width: 768px) {
+            table { min-width: 1100px; table-layout: auto; }
+            th { padding: 16px 12px; font-size: 1rem; white-space: nowrap; }
+            td { padding: 8px; }
+            .table-input { font-size: 0.95rem; padding: 10px 12px; border-radius: 12px; }
+            input[type="datetime-local"].table-input { font-size: 0.95rem; padding: 10px 12px; }
+            .col-date { width: 220px; }
+            .col-cond { width: 180px; }
+            .col-sugar, .col-sys, .col-dia { width: 120px; }
+            .col-notes { min-width: 200px; width: auto; }
+            .col-action { width: 120px; }
+        }
 
     </style>
 </head>
-<body class="mode-transition text-lg">
+<body class="mode-transition text-xs sm:text-sm md:text-lg">
 
-    <div class="w-full max-w-[100vw] mx-auto p-4 md:p-6 main-wrapper overflow-hidden">
+    <div class="w-full max-w-[100vw] mx-auto p-3 md:p-6 main-wrapper overflow-hidden">
         
-        <header class="flex justify-between items-center mb-6">
+        <header class="flex justify-between items-center mb-4 md:mb-6">
             <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-pink-500">
+                <h1 class="text-lg md:text-3xl font-bold text-pink-500">
                     <i class="fa-solid fa-heart-pulse"></i> Pencatat Kesehatan Istriku Tercinta Dek Eva
                 </h1>
-                <p class="text-sm md:text-base opacity-70 mt-1">Catat kesehatan Dek Eva dengan penuh cinta ✨</p>
+                <p class="text-xs md:text-base opacity-70 mt-0.5">Catat kesehatan Dek Eva dengan penuh cinta ✨</p>
             </div>
-            <button id="themeToggle" class="w-12 h-12 shrink-0 rounded-full cute-card flex items-center justify-center text-xl text-pink-500 active:scale-95 transition-transform ml-4">
+            <button id="themeToggle" class="w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-full cute-card flex items-center justify-center text-lg md:text-xl text-pink-500 active:scale-95 transition-transform ml-2">
                 <i id="themeIcon" class="fa-solid fa-moon"></i>
             </button>
         </header>
 
         <div class="cute-card w-full mb-6">
             
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                <h2 class="text-xl font-bold text-pink-500"><i class="fa-solid fa-table"></i> Data & Riwayat Kesehatan</h2>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+                <h2 class="text-sm md:text-xl font-bold text-pink-500"><i class="fa-solid fa-table"></i> Data & Riwayat Kesehatan</h2>
                 
-                <div class="flex gap-2 bg-pink-50 dark:bg-pink-900/30 p-2 rounded-xl border-2 border-pink-200 dark:border-pink-800">
-                    <select id="monthFilter" onchange="renderData()" class="text-sm p-2 bg-transparent border-none outline-none focus:ring-0 text-center font-semibold">
+                <div class="flex gap-1 md:gap-2 bg-pink-50 dark:bg-pink-900/30 p-1 md:p-2 rounded-xl border-2 border-pink-200 dark:border-pink-800 self-start md:self-auto">
+                    <select id="monthFilter" onchange="renderData()" class="text-xs md:text-sm p-1 md:p-2 bg-transparent border-none outline-none focus:ring-0 text-center font-semibold">
                         <option value="all">Semua Bulan</option>
                         <option value="0">Januari</option>
                         <option value="1">Februari</option>
@@ -205,7 +229,7 @@
                         <option value="10">November</option>
                         <option value="11">Desember</option>
                     </select>
-                    <select id="yearFilter" onchange="renderData()" class="text-sm p-2 bg-transparent border-none outline-none focus:ring-0 text-center font-semibold">
+                    <select id="yearFilter" onchange="renderData()" class="text-xs md:text-sm p-1 md:p-2 bg-transparent border-none outline-none focus:ring-0 text-center font-semibold">
                     </select>
                 </div>
             </div>
@@ -216,9 +240,9 @@
                         <tr>
                             <th class="col-date">Waktu / Tanggal</th>
                             <th class="col-cond">Kondisi</th>
-                            <th class="col-sugar">Gula Darah</th>
-                            <th class="col-sys">Sistolik (Sys)</th>
-                            <th class="col-dia">Diastolik (Dia)</th>
+                            <th class="col-sugar">Gula</th>
+                            <th class="col-sys">Sys</th>
+                            <th class="col-dia">Dia</th>
                             <th class="col-notes">Catatan</th>
                             <th class="col-action">Aksi</th>
                         </tr>
@@ -228,16 +252,16 @@
                 </table>
             </div>
 
-            <button onclick="addEmptyRows(10)" class="mt-4 w-full py-4 rounded-xl text-base font-bold btn-outline-dashed uppercase tracking-wider flex justify-center items-center gap-2">
+            <button onclick="addEmptyRows(10)" class="mt-4 w-full py-3 md:py-4 rounded-xl text-xs md:text-base font-bold btn-outline-dashed uppercase tracking-wider flex justify-center items-center gap-2">
                 <i class="fa-solid fa-plus-circle"></i> Tambah 10 Baris Ke Bawah
             </button>
 
         </div>
 
-        <footer class="footer mt-6 py-6 text-center text-sm md:text-base opacity-75">
-            <p class="font-bold text-lg text-pink-500">© 2026 Dibuat oleh Mas Sigit Mandut.</p>
-            <p class="mt-1">Dibuat dengan <i class="fa-solid fa-heart text-pink-400"></i> untuk kesehatan Dek Eva tercinta yang berharga.</p>
-            <p class="mt-1">Sehat selalu dan umur panjang bersama Mas Sigit ya Dek Evaku sayang <i class="fa-solid fa-heart text-pink-400"></i></p>
+        <footer class="footer mt-6 py-4 text-center text-xs md:text-base opacity-75">
+            <p class="font-bold text-sm md:text-lg text-pink-500">© 2026 Dibuat oleh Mas Sigit Mandut.</p>
+            <p class="mt-0.5">Dibuat dengan <i class="fa-solid fa-heart text-pink-400"></i> untuk kesehatan Dek Eva tercinta yang berharga.</p>
+            <p class="mt-0.5">Sehat selalu dan umur panjang bersama Mas Sigit ya Dek Evaku sayang <i class="fa-solid fa-heart text-pink-400"></i></p>
         </footer>
     </div>
 
@@ -366,19 +390,19 @@
                     <td><input type="datetime-local" class="table-input" value="${item.date || ''}" onchange="updateData('${item.id}', 'date', this.value)"></td>
                     <td>
                         <select class="table-input opacity-90 text-center text-center-last" onchange="updateData('${item.id}', 'condition', this.value)">
-                            <option value="" ${!item.condition ? 'selected' : ''}>- Pilih Kondisi -</option>
+                            <option value="" ${!item.condition ? 'selected' : ''}>- Pilih -</option>
                             <option value="Sebelum Makan" ${item.condition === 'Sebelum Makan' ? 'selected' : ''}>Sebelum Makan 🍽️</option>
                             <option value="Sesudah Makan" ${item.condition === 'Sesudah Makan' ? 'selected' : ''}>Sesudah Makan 🍰</option>
                             <option value="Acak / Puasa" ${item.condition === 'Acak / Puasa' ? 'selected' : ''}>Lainnya / Puasa 🛌</option>
                         </select>
                     </td>
-                    <td><input type="number" class="table-input font-bold text-pink-500" value="${item.sugar || ''}" onchange="updateData('${item.id}', 'sugar', this.value)" placeholder="Cth: 100"></td>
-                    <td><input type="number" class="table-input font-bold text-pink-500" value="${item.sys || ''}" onchange="updateData('${item.id}', 'sys', this.value)" placeholder="Cth: 120"></td>
-                    <td><input type="number" class="table-input font-bold text-pink-500" value="${item.dia || ''}" onchange="updateData('${item.id}', 'dia', this.value)" placeholder="Cth: 80"></td>
-                    <td><textarea class="table-input h-12 resize-none opacity-80" onchange="updateData('${item.id}', 'notes', this.value)" placeholder="Ketik catatan di sini...">${item.notes || ''}</textarea></td>
+                    <td><input type="number" class="table-input font-bold text-pink-500" value="${item.sugar || ''}" onchange="updateData('${item.id}', 'sugar', this.value)" placeholder="100"></td>
+                    <td><input type="number" class="table-input font-bold text-pink-500" value="${item.sys || ''}" onchange="updateData('${item.id}', 'sys', this.value)" placeholder="120"></td>
+                    <td><input type="number" class="table-input font-bold text-pink-500" value="${item.dia || ''}" onchange="updateData('${item.id}', 'dia', this.value)" placeholder="80"></td>
+                    <td><textarea class="table-input h-8 resize-none opacity-80" onchange="updateData('${item.id}', 'notes', this.value)" placeholder="Ketik...">${item.notes || ''}</textarea></td>
                     <td class="col-action">
-                        <button onclick="deleteRecord('${item.id}')" class="text-red-400 hover:text-red-600 bg-red-50 dark:bg-red-900/30 p-3 rounded-xl transition-transform active:scale-90 w-full" title="Hapus Baris">
-                            <i class="fa-solid fa-trash"></i> Hapus
+                        <button onclick="deleteRecord('${item.id}')" class="text-red-400 hover:text-red-600 bg-red-50 dark:bg-red-900/30 p-1 md:p-3 rounded-lg md:rounded-xl transition-transform active:scale-90 w-full flex items-center justify-center gap-0.5" title="Hapus Baris">
+                            <i class="fa-solid fa-trash text-[10px] md:text-sm"></i> <span class="hidden md:inline">Hapus</span>
                         </button>
                     </td>
                 </tr>
