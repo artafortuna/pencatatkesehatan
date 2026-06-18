@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HealthTracker - Cute Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Catatan Kesehatan Dek Eva</title>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -37,6 +37,15 @@
             color: var(--text-main);
             font-family: 'Poppins', sans-serif;
             transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         h1, h2, h3, .font-cute {
@@ -48,6 +57,7 @@
             border: 2.5px solid var(--border-color);
             border-radius: 28px;
             box-shadow: var(--shadow);
+            padding: 1rem;
         }
 
         .btn-pink {
@@ -61,38 +71,39 @@
             opacity: 0.95;
         }
 
-        input, select, textarea {
-            background-color: var(--bg-color);
-            border: 2.5px solid var(--border-color);
-            border-radius: 16px;
-            color: var(--text-main);
-            font-size: 1.15rem;
-            padding: 14px !important;
+        .btn-outline-dashed {
+            background-color: transparent;
+            color: var(--accent-pink);
+            border: 2px dashed var(--accent-pink);
+            transition: all 0.2s;
         }
 
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent-pink);
+        .btn-outline-dashed:hover {
+            background-color: rgba(255, 105, 180, 0.1);
         }
 
         .footer {
             border-top: 2.5px dashed var(--border-color);
+            margin-top: auto;
         }
 
         .mode-transition {
             transition: background-color 0.5s, color 0.5s;
         }
 
+        /* TABEL SPREADSHEET STYLE OPTIMAL UNTUK LANDSCAPE */
         .cute-table-container {
             overflow-x: auto;
             border-radius: 20px;
             border: 2.5px solid var(--border-color);
+            -webkit-overflow-scrolling: touch;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            text-align: left;
+            text-align: center; /* Diubah menjadi rata tengah */
+            min-width: 1100px; /* Diperlebar agar input form muat di layar Xiaomi 14T */
         }
 
         th {
@@ -100,14 +111,10 @@
             color: #4A0E2A;
             font-family: 'Comfortaa', cursive;
             font-weight: 700;
-            padding: 16px;
+            padding: 16px 12px;
             white-space: nowrap;
-            /* Garis pemisah kolom header */
             border-right: 2px solid rgba(74, 14, 42, 0.15); 
-        }
-
-        th:last-child {
-            border-right: none; /* Kolom terakhir tidak butuh garis kanan */
+            text-align: center; /* Pastikan judul tabel rata tengah */
         }
 
         [data-theme='dark'] th {
@@ -117,162 +124,183 @@
         }
 
         td {
-            padding: 16px;
+            padding: 8px;
             border-bottom: 1.5px solid var(--border-color);
-            /* Garis pemisah kolom isi data */
             border-right: 1.5px solid var(--border-color); 
+            vertical-align: middle;
         }
 
-        td:last-child {
-            border-right: none; /* Kolom terakhir tidak butuh garis kanan */
+        td:last-child, th:last-child { border-right: none; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: rgba(255, 182, 193, 0.05); }
+
+        /* KUSTOMISASI INPUT LANGSUNG DI TABEL */
+        .table-input {
+            width: 100%;
+            background-color: transparent;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 10px 12px;
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            text-align: center; /* Input field menjadi rata tengah */
+            transition: all 0.3s;
         }
 
-        tr:last-child td {
-            border-bottom: none;
+        .table-input:hover {
+            border-color: rgba(255, 105, 180, 0.2);
         }
 
-        tr:hover td {
-            background-color: rgba(255, 182, 193, 0.1);
+        .table-input:focus {
+            outline: none;
+            border-color: var(--accent-pink);
+            background-color: var(--bg-color);
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.1);
         }
+        
+        /* Mengatur lebar spesifik kolom */
+        .col-date { width: 220px; }
+        .col-cond { width: 180px; }
+        .col-sugar, .col-sys, .col-dia { width: 120px; }
+        .col-notes { min-width: 200px; }
+        .col-action { width: 120px; text-align: center; }
+
     </style>
 </head>
 <body class="mode-transition text-lg">
 
-    <div class="max-w-7xl mx-auto p-4 md:p-8">
+    <div class="w-full max-w-[100vw] mx-auto p-4 md:p-6 main-wrapper overflow-hidden">
         
-        <header class="flex justify-between items-center mb-10">
+        <header class="flex justify-between items-center mb-6">
             <div>
-                <h1 class="text-4xl font-bold text-pink-500 md:text-4xl">
-                    <i class="fa-solid fa-heart-pulse"></i> Pencatat Kesehatan Istriku Tercinta Dek Eva Hernawati
+                <h1 class="text-2xl md:text-3xl font-bold text-pink-500">
+                    <i class="fa-solid fa-heart-pulse"></i> Pencatat Kesehatan Istriku Tercinta Dek Eva
                 </h1>
-                <p class="text-base md:text-lg opacity-70 mt-1">Catat kesehatan Dek Eva dengan penuh cinta ✨</p>
+                <p class="text-sm md:text-base opacity-70 mt-1">Catat kesehatan Dek Eva dengan penuh cinta ✨</p>
             </div>
-            <button id="themeToggle" class="w-14 h-14 rounded-full cute-card flex items-center justify-center text-2xl text-pink-500 active:scale-95 transition-transform">
+            <button id="themeToggle" class="w-12 h-12 shrink-0 rounded-full cute-card flex items-center justify-center text-xl text-pink-500 active:scale-95 transition-transform ml-4">
                 <i id="themeIcon" class="fa-solid fa-moon"></i>
             </button>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="cute-card w-full mb-6">
             
-            <div class="lg:col-span-1">
-                <div class="cute-card p-6 md:p-8 sticky top-6">
-                    <h2 id="formTitle" class="text-2xl font-bold mb-6 text-pink-500"><i class="fa-solid fa-plus-circle"></i> Tambah Data</h2>
-                    <form id="healthForm" class="space-y-5">
-                        <input type="hidden" id="editIndex" value="-1">
-                        
-                        <div>
-                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Tanggal & Waktu</label>
-                            <input type="datetime-local" id="dateInput" required class="w-full">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Kondisi Tubuh</label>
-                            <select id="conditionInput" required class="w-full">
-                                <option value="Sebelum Makan">Sebelum Makan 🍽️</option>
-                                <option value="Sesudah Makan">Sesudah Makan 🍰</option>
-                                <option value="Acak / Puasa">Lainnya / Puasa 🛌</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Gula Darah (mg/dL)</label>
-                            <input type="number" id="sugarInput" placeholder="Contoh: 100" class="w-full">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Tekanan Darah (Sys/Dia)</label>
-                            <div class="flex gap-3">
-                                <input type="number" id="sysInput" placeholder="120" class="w-1/2">
-                                <input type="number" id="diaInput" placeholder="80" class="w-1/2">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-bold uppercase mb-2 opacity-75">Catatan Tambahan</label>
-                            <textarea id="notesInput" placeholder="Contoh: Habis makan martabak / pusing sedikit" class="w-full h-24 resize-none" rows="2"></textarea>
-                        </div>
-
-                        <button type="submit" id="submitBtn" class="w-full py-4 rounded-2xl btn-pink font-bold text-xl shadow-md mt-2">
-                            Simpan Data 🌸
-                        </button>
-                        <button type="button" id="cancelEdit" class="w-full py-2 hidden text-sm font-bold opacity-60 hover:opacity-100">Batal Edit</button>
-                    </form>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                <h2 class="text-xl font-bold text-pink-500"><i class="fa-solid fa-table"></i> Data & Riwayat Kesehatan</h2>
+                
+                <div class="flex gap-2 bg-pink-50 dark:bg-pink-900/30 p-2 rounded-xl border-2 border-pink-200 dark:border-pink-800">
+                    <select id="monthFilter" onchange="renderData()" class="text-sm p-2 bg-transparent border-none outline-none focus:ring-0 text-center font-semibold">
+                        <option value="all">Semua Bulan</option>
+                        <option value="0">Januari</option>
+                        <option value="1">Februari</option>
+                        <option value="2">Maret</option>
+                        <option value="3">April</option>
+                        <option value="4">Mei</option>
+                        <option value="5">Juni</option>
+                        <option value="6">Juli</option>
+                        <option value="7">Agustus</option>
+                        <option value="8">September</option>
+                        <option value="9">Oktober</option>
+                        <option value="10">November</option>
+                        <option value="11">Desember</option>
+                    </select>
+                    <select id="yearFilter" onchange="renderData()" class="text-sm p-2 bg-transparent border-none outline-none focus:ring-0 text-center font-semibold">
+                    </select>
                 </div>
             </div>
 
-            <div class="lg:col-span-2">
-                <div class="cute-card p-6 md:p-8 min-h-[450px]">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                        <h2 class="text-2xl font-bold text-pink-500"><i class="fa-solid fa-history"></i> Riwayat Kesehatan</h2>
-                        
-                        <div class="flex gap-2">
-                            <select id="monthFilter" onchange="renderData()" class="text-sm p-2 bg-transparent">
-                                <option value="all">Semua Bulan</option>
-                                <option value="0">Januari</option>
-                                <option value="1">Februari</option>
-                                <option value="2">Maret</option>
-                                <option value="3">April</option>
-                                <option value="4">Mei</option>
-                                <option value="5">Juni</option>
-                                <option value="6">Juli</option>
-                                <option value="7">Agustus</option>
-                                <option value="8">September</option>
-                                <option value="9">Oktober</option>
-                                <option value="10">November</option>
-                                <option value="11">Desember</option>
-                            </select>
-                            <select id="yearFilter" onchange="renderData()" class="text-sm p-2 bg-transparent">
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div id="emptyState" class="text-center py-28 opacity-40">
-                        <i class="fa-solid fa-cloud-sun text-6xl mb-4"></i>
-                        <p class="text-xl">Tidak ada catatan pada bulan ini...</p>
-                    </div>
-
-                    <div id="tableContainer" class="cute-table-container hidden">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Waktu / Tanggal</th>
-                                    <th>Kondisi</th>
-                                    <th>Gula Darah</th>
-                                    <th>Tensi Darah</th>
-                                    <th>Catatan</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody">
-                                </tbody>
-                        </table>
-                    </div>
-
-                </div>
+            <div id="tableContainer" class="cute-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="col-date">Waktu / Tanggal</th>
+                            <th class="col-cond">Kondisi</th>
+                            <th class="col-sugar">Gula Darah</th>
+                            <th class="col-sys">Sistolik (Sys)</th>
+                            <th class="col-dia">Diastolik (Dia)</th>
+                            <th class="col-notes">Catatan</th>
+                            <th class="col-action">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        </tbody>
+                </table>
             </div>
+
+            <button onclick="addEmptyRows(10)" class="mt-4 w-full py-4 rounded-xl text-base font-bold btn-outline-dashed uppercase tracking-wider flex justify-center items-center gap-2">
+                <i class="fa-solid fa-plus-circle"></i> Tambah 10 Baris Ke Bawah
+            </button>
+
         </div>
 
-        <footer class="footer mt-16 py-8 text-center text-base opacity-75">
-            <p class="font-bold text-lg text-pink-500">© 2026 Dibuat oleh Mas Sigit Mandut</p>
-            <p class="mt-1">Dibuat dengan <i class="fa-solid fa-heart text-pink-400"></i> untuk kesehatan Dek Eva tercinta yang berharga</p>
+        <footer class="footer mt-6 py-6 text-center text-sm md:text-base opacity-75">
+            <p class="font-bold text-lg text-pink-500">© 2026 Dibuat oleh Mas Sigit Mandut.</p>
+            <p class="mt-1">Dibuat dengan <i class="fa-solid fa-heart text-pink-400"></i> untuk kesehatan Dek Eva tercinta yang berharga.</p>
             <p class="mt-1">Sehat selalu dan umur panjang bersama Mas Sigit ya Dek Evaku sayang <i class="fa-solid fa-heart text-pink-400"></i></p>
-            <p class="mt-1">Mas Sigit <i class="fa-solid fa-heart text-pink-400"></i> Dek Eva</p>
         </footer>
     </div>
 
     <script>
-        let healthData = JSON.parse(localStorage.getItem('health_records')) || [];
+        // Variabel Global untuk IndexedDB
+        let db;
+        let healthData = [];
 
-        const healthForm = document.getElementById('healthForm');
         const tableBody = document.getElementById('tableBody');
-        const tableContainer = document.getElementById('tableContainer');
-        const emptyState = document.getElementById('emptyState');
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 
+        // Inisialisasi Database IndexedDB
+        function initDB() {
+            const request = indexedDB.open('HealthTrackerDB', 1);
+
+            request.onupgradeneeded = function(event) {
+                db = event.target.result;
+                if (!db.objectStoreNames.contains('health_records')) {
+                    db.createObjectStore('health_records', { keyPath: 'id' });
+                }
+            };
+
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                const transaction = db.transaction('health_records', 'readonly');
+                const store = transaction.objectStore('health_records');
+                const getAllRequest = store.getAll();
+
+                getAllRequest.onsuccess = function() {
+                    healthData = getAllRequest.result || [];
+
+                    // MIGRATION: Pindahkan data lama dari localStorage (jika ada) ke IndexedDB
+                    const oldDataStr = localStorage.getItem('health_records');
+                    if (healthData.length === 0 && oldDataStr) {
+                        const oldData = JSON.parse(oldDataStr);
+                        if (oldData.length > 0) {
+                            const writeTx = db.transaction('health_records', 'readwrite');
+                            const writeStore = writeTx.objectStore('health_records');
+                            oldData.forEach((d, i) => {
+                                const record = { ...d, id: d.id || Date.now() + i + "" };
+                                healthData.push(record);
+                                writeStore.put(record);
+                            });
+                            localStorage.removeItem('health_records'); // Hapus yang lama agar bersih
+                        }
+                    }
+
+                    // Pastikan data urut berdasarkan waktu dibuat (id)
+                    healthData.sort((a, b) => a.id.localeCompare(b.id));
+                    
+                    // Lanjut inisialisasi aplikasi
+                    initApp();
+                };
+            };
+
+            request.onerror = function(event) {
+                console.error("Gagal membuka IndexedDB", event);
+            };
+        }
+
         function initApp() {
-            setNow();
-            
+            // Setup Filter Tahun
             const yearFilter = document.getElementById('yearFilter');
             const currentYear = new Date().getFullYear();
             let yearOptions = '<option value="all">Semua Tahun</option>';
@@ -280,123 +308,116 @@
                 yearOptions += `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`;
             }
             yearFilter.innerHTML = yearOptions;
-
             document.getElementById('monthFilter').value = new Date().getMonth();
 
-            renderData();
+            // Jika belum ada data sama sekali, langsung sediakan 10 baris kosong pertama
+            if (healthData.length === 0) {
+                addEmptyRows(10);
+            } else {
+                renderData();
+            }
         }
 
-        function setNow() {
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById('dateInput').value = now.toISOString().slice(0, 16);
-        }
+        // Fungsi Tambah Banyak Baris Sekaligus ke IndexedDB
+        window.addEmptyRows = (count) => {
+            const tx = db.transaction('health_records', 'readwrite');
+            const store = tx.objectStore('health_records');
+            
+            for(let i=0; i<count; i++) {
+                const newItem = {
+                    id: Date.now().toString() + Math.random().toString(36).substring(2, 7),
+                    date: "",
+                    condition: "",
+                    sugar: "",
+                    sys: "",
+                    dia: "",
+                    notes: ""
+                };
+                healthData.push(newItem);
+                store.put(newItem); // Simpan ke IDB
+            }
+            
+            tx.oncomplete = () => {
+                renderData();
+                // Scroll sedikit ke bawah otomatis agar kelihatan baris barunya
+                setTimeout(() => {
+                    const container = document.getElementById('tableContainer');
+                    container.scrollTop = container.scrollHeight;
+                }, 100);
+            };
+        };
 
         function renderData() {
             const selectedMonth = document.getElementById('monthFilter').value;
             const selectedYear = document.getElementById('yearFilter').value;
 
+            // Filter Data (Penting: Baris yang belum ada tanggalnya SELALU DITAMPILKAN agar bisa diisi)
             const filteredData = healthData.filter(item => {
+                if (!item.date) return true; 
                 const itemDate = new Date(item.date);
                 const matchMonth = selectedMonth === 'all' || itemDate.getMonth() == selectedMonth;
                 const matchYear = selectedYear === 'all' || itemDate.getFullYear() == selectedYear;
                 return matchMonth && matchYear;
             });
 
-            if (filteredData.length === 0) {
-                emptyState.style.display = 'block';
-                tableContainer.classList.add('hidden');
-                return;
-            }
-            
-            emptyState.style.display = 'none';
-            tableContainer.classList.remove('hidden');
-            
-            tableBody.innerHTML = filteredData.map((item) => {
-                const originalIndex = healthData.findIndex(d => d.date === item.date && d.sugar === item.sugar && d.sys === item.sys);
-                const date = new Date(item.date).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+            // HTML Untuk Baris Data Riwayat (Tinggal ketik/edit)
+            const rowsHtml = filteredData.map((item) => `
+                <tr>
+                    <td><input type="datetime-local" class="table-input" value="${item.date || ''}" onchange="updateData('${item.id}', 'date', this.value)"></td>
+                    <td>
+                        <select class="table-input opacity-90 text-center text-center-last" onchange="updateData('${item.id}', 'condition', this.value)">
+                            <option value="" ${!item.condition ? 'selected' : ''}>- Pilih Kondisi -</option>
+                            <option value="Sebelum Makan" ${item.condition === 'Sebelum Makan' ? 'selected' : ''}>Sebelum Makan 🍽️</option>
+                            <option value="Sesudah Makan" ${item.condition === 'Sesudah Makan' ? 'selected' : ''}>Sesudah Makan 🍰</option>
+                            <option value="Acak / Puasa" ${item.condition === 'Acak / Puasa' ? 'selected' : ''}>Lainnya / Puasa 🛌</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="table-input font-bold text-pink-500" value="${item.sugar || ''}" onchange="updateData('${item.id}', 'sugar', this.value)" placeholder="Cth: 100"></td>
+                    <td><input type="number" class="table-input font-bold text-pink-500" value="${item.sys || ''}" onchange="updateData('${item.id}', 'sys', this.value)" placeholder="Cth: 120"></td>
+                    <td><input type="number" class="table-input font-bold text-pink-500" value="${item.dia || ''}" onchange="updateData('${item.id}', 'dia', this.value)" placeholder="Cth: 80"></td>
+                    <td><textarea class="table-input h-12 resize-none opacity-80" onchange="updateData('${item.id}', 'notes', this.value)" placeholder="Ketik catatan di sini...">${item.notes || ''}</textarea></td>
+                    <td class="col-action">
+                        <button onclick="deleteRecord('${item.id}')" class="text-red-400 hover:text-red-600 bg-red-50 dark:bg-red-900/30 p-3 rounded-xl transition-transform active:scale-90 w-full" title="Hapus Baris">
+                            <i class="fa-solid fa-trash"></i> Hapus
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            tableBody.innerHTML = rowsHtml;
+        }
+
+        // Fungsi Auto-Save Saat Ketik di Kolom (Langsung ke IndexedDB)
+        window.updateData = (id, field, value) => {
+            const index = healthData.findIndex(d => d.id === id);
+            if(index !== -1) {
+                healthData[index][field] = value;
                 
-                const condition = item.condition || "Sebelum Makan"; 
-                const notes = item.notes || `<span class="opacity-30 italic">- tidak ada -</span>`;
+                // Simpan perubahan ke IndexedDB
+                const tx = db.transaction('health_records', 'readwrite');
+                const store = tx.objectStore('health_records');
+                store.put(healthData[index]);
                 
-                return `
-                    <tr>
-                        <td class="text-sm font-semibold text-pink-600">${date}</td>
-                        <td class="text-sm font-medium opacity-90">${condition}</td>
-                        <td><span class="font-bold text-pink-500">${item.sugar || '-'}</span> <small class="text-xs opacity-60">mg/dL</small></td>
-                        <td><span class="font-bold text-pink-500">${item.sys || '-'}/${item.dia || '-'}</span> <small class="text-xs opacity-60">mmHg</small></td>
-                        <td class="text-sm max-w-[200px] break-words opacity-80">${notes}</td>
-                        <td class="text-center text-lg">
-                            <button onclick="editRecord(${originalIndex})" class="text-blue-400 hover:text-blue-600 px-1 transition-transform active:scale-90" title="Edit"><i class="fa-solid fa-edit"></i></button>
-                            <button onclick="deleteRecord(${originalIndex})" class="text-red-400 hover:text-red-600 px-1 transition-transform active:scale-90" title="Hapus"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        healthForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const editIdx = parseInt(document.getElementById('editIndex').value);
-            
-            const record = {
-                date: document.getElementById('dateInput').value,
-                condition: document.getElementById('conditionInput').value,
-                sugar: document.getElementById('sugarInput').value,
-                sys: document.getElementById('sysInput').value,
-                dia: document.getElementById('diaInput').value,
-                notes: document.getElementById('notesInput').value
-            };
-
-            if (editIdx === -1) {
-                healthData.unshift(record);
-            } else {
-                healthData[editIdx] = record;
-            }
-
-            saveAndRefresh();
-            resetForm();
-        });
-
-        function saveAndRefresh() {
-            localStorage.setItem('health_records', JSON.stringify(healthData));
-            renderData();
-        }
-
-        function resetForm() {
-            healthForm.reset();
-            document.getElementById('editIndex').value = "-1";
-            document.getElementById('submitBtn').innerHTML = "Simpan Data 🌸";
-            document.getElementById('cancelEdit').classList.add('hidden');
-            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-plus-circle"></i> Tambah Data';
-            setNow();
-        }
-
-        window.editRecord = (index) => {
-            const item = healthData[index];
-            document.getElementById('dateInput').value = item.date;
-            document.getElementById('conditionInput').value = item.condition || "Sebelum Makan";
-            document.getElementById('sugarInput').value = item.sugar;
-            document.getElementById('sysInput').value = item.sys;
-            document.getElementById('diaInput').value = item.dia;
-            document.getElementById('notesInput').value = item.notes || "";
-            document.getElementById('editIndex').value = index;
-
-            document.getElementById('submitBtn').innerHTML = "Perbarui Data ✨";
-            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen-fancy"></i> Edit Catatan';
-            document.getElementById('cancelEdit').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        window.deleteRecord = (index) => {
-            if(confirm("Hapus catatan cantik ini? 🥺")) {
-                healthData.splice(index, 1);
-                saveAndRefresh();
+                // Sengaja TIDAK me-render ulang keseluruhan tabel agar cursor di HP tidak tertutup
             }
         };
 
-        document.getElementById('cancelEdit').onclick = resetForm;
+        // Hapus Data dari Array & IndexedDB
+        window.deleteRecord = (id) => {
+            if(confirm("Hapus baris ini? 🥺")) {
+                healthData = healthData.filter(d => d.id !== id);
+                
+                const tx = db.transaction('health_records', 'readwrite');
+                const store = tx.objectStore('health_records');
+                store.delete(id);
+                
+                tx.oncomplete = () => {
+                    renderData();
+                };
+            }
+        };
 
+        // TEMA GELAP / TERANG (Tetap pakai localStorage karena hanya UI setting)
         const savedTheme = localStorage.getItem('theme') || 'light';
         body.setAttribute('data-theme', savedTheme);
         updateThemeIcon(savedTheme);
@@ -420,7 +441,8 @@
             }
         }
 
-        initApp();
+        // Jalankan Database & Aplikasi
+        initDB();
     </script>
 </body>
 </html>
